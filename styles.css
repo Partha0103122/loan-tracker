@@ -314,12 +314,6 @@ tbody tr:last-child td {
   .summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-
-@media (max-width: 560px) {
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
 
   main {
     padding-inline: 10px;
@@ -402,5 +396,11 @@ tbody tr:last-child td {
   th,
   td {
     padding: 9px 8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
   }
 }
