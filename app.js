@@ -29,6 +29,7 @@ const els = {
   applyCommonPayment: document.querySelector("#applyCommonPayment"),
   clearPartPayments: document.querySelector("#clearPartPayments"),
   sort: document.querySelector("#sortLoans"),
+  loanCards: document.querySelector("#loanCards"),
   loanRows: document.querySelector("#loanRows"),
   rawRows: document.querySelector("#rawRows"),
   reset: document.querySelector("#resetData"),
@@ -124,25 +125,47 @@ function buildLoanView(loan, index, asOf) {
 }
 
 function renderLoanRows(rows) {
+  els.loanCards.innerHTML = "";
   els.loanRows.innerHTML = "";
   rows.forEach((row) => {
+    const card = document.createElement("article");
+    card.className = "loan-card";
+    card.innerHTML = `
+      <div class="loan-card-title">
+        <strong>${escapeHtml(row.loan.loanType)}</strong>
+        <span>${escapeHtml(row.loan.account)}</span>
+      </div>
+      <dl>
+        <div><dt>Balance today</dt><dd>${money.format(row.currentPrincipal)}</dd></div>
+        <div><dt>EMI</dt><dd>${money.format(row.loan.emi)}</dd></div>
+        <div><dt>Remaining</dt><dd><span class="pill ${row.remaining <= 12 ? "warn" : ""}">${row.remaining}</span></dd></div>
+        <div><dt>Closes by</dt><dd>${row.closeDate ? monthName.format(row.closeDate) : "Closed"}</dd></div>
+        <div><dt>Interest/month</dt><dd>${money.format(row.monthlyInterest)}</dd></div>
+        <div><dt>Part payment</dt><dd><input class="part-input" data-payment="${row.id}" type="number" min="0" step="1000" value="${row.payment || ""}" aria-label="Part payment for ${escapeHtml(row.loan.loanType)}"></dd></div>
+        <div><dt>EMIs cut</dt><dd>${row.emisCut}</dd></div>
+        <div><dt>New close</dt><dd>${row.payment > 0 ? (row.afterPaymentCloseDate ? monthName.format(row.afterPaymentCloseDate) : "Closed") : "-"}</dd></div>
+        <div><dt>Interest saved</dt><dd>${money.format(row.interestSaved)}</dd></div>
+      </dl>
+    `;
+    els.loanCards.appendChild(card);
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>
+      <td data-label="Loan">
         <div class="loan-title">
           <strong>${escapeHtml(row.loan.loanType)}</strong>
           <span>${escapeHtml(row.loan.account)}</span>
         </div>
       </td>
-      <td>${money.format(row.currentPrincipal)}</td>
-      <td>${money.format(row.loan.emi)}</td>
-      <td><span class="pill ${row.remaining <= 12 ? "warn" : ""}">${row.remaining}</span></td>
-      <td>${row.closeDate ? monthName.format(row.closeDate) : "Closed"}</td>
-      <td>${money.format(row.monthlyInterest)}</td>
-      <td><input class="part-input" data-payment="${row.id}" type="number" min="0" step="1000" value="${row.payment || ""}" aria-label="Part payment for ${escapeHtml(row.loan.loanType)}"></td>
-      <td>${row.emisCut}</td>
-      <td>${row.payment > 0 ? (row.afterPaymentCloseDate ? monthName.format(row.afterPaymentCloseDate) : "Closed") : "-"}</td>
-      <td>${money.format(row.interestSaved)}</td>
+      <td data-label="Balance today">${money.format(row.currentPrincipal)}</td>
+      <td data-label="EMI">${money.format(row.loan.emi)}</td>
+      <td data-label="Remaining"><span class="pill ${row.remaining <= 12 ? "warn" : ""}">${row.remaining}</span></td>
+      <td data-label="Closes by">${row.closeDate ? monthName.format(row.closeDate) : "Closed"}</td>
+      <td data-label="Interest/month">${money.format(row.monthlyInterest)}</td>
+      <td data-label="Part payment"><input class="part-input" data-payment="${row.id}" type="number" min="0" step="1000" value="${row.payment || ""}" aria-label="Part payment for ${escapeHtml(row.loan.loanType)}"></td>
+      <td data-label="EMIs cut">${row.emisCut}</td>
+      <td data-label="New close">${row.payment > 0 ? (row.afterPaymentCloseDate ? monthName.format(row.afterPaymentCloseDate) : "Closed") : "-"}</td>
+      <td data-label="Interest saved">${money.format(row.interestSaved)}</td>
     `;
     els.loanRows.appendChild(tr);
   });

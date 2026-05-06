@@ -245,6 +245,10 @@ tbody tr:last-child td {
   width: 130px;
 }
 
+.loan-card-list {
+  display: none;
+}
+
 .insights {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -315,6 +319,84 @@ tbody tr:last-child td {
 @media (max-width: 560px) {
   .summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  main {
+    padding-inline: 10px;
+  }
+
+  .loan-card-list {
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .loan-card-list > div {
+    display: grid;
+    gap: 12px;
+  }
+
+  .loan-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .loan-card-title {
+    display: grid;
+    gap: 4px;
+    background: #edf4f0;
+    padding: 12px;
+  }
+
+  .loan-card-title strong {
+    font-size: 0.98rem;
+  }
+
+  .loan-card-title span {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .loan-card dl {
+    margin: 0;
+  }
+
+  .loan-card dl > div {
+    display: grid;
+    grid-template-columns: minmax(118px, 42%) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 44px;
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+    text-align: right;
+  }
+
+  .loan-card dl > div:last-child {
+    border-bottom: 0;
+  }
+
+  .loan-card dt {
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .loan-card dd {
+    margin: 0;
+  }
+
+  .loan-title {
+    min-width: 0;
+  }
+
+  .part-input {
+    width: 100%;
+    min-width: 0;
   }
 
   th,
