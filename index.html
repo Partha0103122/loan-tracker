@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10231f">
+    <title>Loan Tracker</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Personal loan dashboard</p>
+        <h1>Loan Tracker</h1>
+      </div>
+      <div class="date-panel">
+        <label for="asOfDate">View as of</label>
+        <input id="asOfDate" type="date">
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="Portfolio summary">
+        <div class="metric">
+          <span>Total outstanding</span>
+          <strong id="totalOutstanding">-</strong>
+        </div>
+        <div class="metric">
+          <span>Monthly EMI load</span>
+          <strong id="totalEmi">-</strong>
+        </div>
+        <div class="metric">
+          <span>Interest this month</span>
+          <strong id="monthlyInterest">-</strong>
+        </div>
+        <div class="metric">
+          <span>Potential saving</span>
+          <strong id="totalSaving">-</strong>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Loan controls">
+        <div class="search-box">
+          <label for="searchLoans">Search</label>
+          <input id="searchLoans" type="search" placeholder="Loan, account, bank">
+        </div>
+        <div class="control-group">
+          <label for="commonPartPayment">Apply one part payment to every loan</label>
+          <div class="inline-control scenario-control">
+            <input id="commonPartPayment" type="number" min="0" step="1000" placeholder="Amount">
+            <button id="applyCommonPayment" type="button" aria-label="Apply amount to all loans" title="Apply amount to all loans">Apply</button>
+            <button id="clearPartPayments" type="button" aria-label="Clear all part payments" title="Clear all part payments">Clear</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="sortLoans">Sort by</label>
+          <select id="sortLoans">
+            <option value="interestDesc">Highest monthly interest</option>
+            <option value="savingDesc">Highest saving</option>
+            <option value="closeAsc">Closing soonest</option>
+            <option value="emiDesc">Highest EMI</option>
+            <option value="balanceDesc">Highest balance</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="loan-table-wrap" aria-label="Loan calculations">
+        <table class="loan-table">
+          <thead>
+            <tr>
+              <th>Loan</th>
+              <th>Balance today</th>
+              <th>EMI</th>
+              <th>Remaining</th>
+              <th>Closes by</th>
+              <th>Interest/month</th>
+              <th>Part payment</th>
+              <th>EMIs cut</th>
+              <th>New close</th>
+              <th>Interest saved</th>
+            </tr>
+          </thead>
+          <tbody id="loanRows"></tbody>
+        </table>
+      </section>
+
+      <section class="insights" aria-label="Useful insights">
+        <div>
+          <h2>Suggested focus</h2>
+          <p id="focusInsight">-</p>
+        </div>
+        <div>
+          <h2>Fast wins</h2>
+          <p id="quickWinInsight">-</p>
+        </div>
+        <div>
+          <h2>Monthly pressure</h2>
+          <p id="pressureInsight">-</p>
+        </div>
+      </section>
+
+      <section class="raw-data" aria-label="Raw loan data">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Source rows</p>
+            <h2>Raw Data</h2>
+          </div>
+          <button id="resetData" type="button">Reset</button>
+        </div>
+        <div class="raw-table-wrap">
+          <table class="raw-table">
+            <thead>
+              <tr>
+                <th>Loan Type</th>
+                <th>Loan Account</th>
+                <th>Loan Amount</th>
+                <th>Principal Outstanding</th>
+                <th>Interest %</th>
+                <th>EMI</th>
+                <th>EMI Date</th>
+              </tr>
+            </thead>
+            <tbody id="rawRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
