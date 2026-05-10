@@ -24,6 +24,7 @@ let partPayments = loadJson(PAYMENT_KEY, {});
 
 const els = {
   asOfDate: document.querySelector("#asOfDate"),
+  refreshApp: document.querySelector("#refreshApp"),
   search: document.querySelector("#searchLoans"),
   commonPayment: document.querySelector("#commonPartPayment"),
   applyCommonPayment: document.querySelector("#applyCommonPayment"),
@@ -46,6 +47,7 @@ els.asOfDate.value = toInputDate(new Date());
 render();
 
 els.asOfDate.addEventListener("change", render);
+els.refreshApp.addEventListener("click", refreshApp);
 els.search.addEventListener("input", render);
 els.sort.addEventListener("change", render);
 els.applyCommonPayment.addEventListener("click", () => {
@@ -72,6 +74,20 @@ els.reset.addEventListener("click", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+}
+
+async function refreshApp() {
+  if ("caches" in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+  }
+
+  if ("serviceWorker" in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.update()));
+  }
+
+  window.location.reload();
 }
 
 function render() {
