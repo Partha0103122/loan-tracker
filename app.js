@@ -9,7 +9,7 @@ const defaultLoans = [
   { loanType: "ICICI - Personal Loan", account: "LBHYD00046933749", loanAmount: 2000000, principal: 1046189, annualRate: 10.25, emi: 37505, emiDay: 1 },
   { loanType: "ICICI - Personal Loan", account: "HPHYD00049513511", loanAmount: 500000, principal: 388831, annualRate: 10.35, emi: 8437, emiDay: 10 },
   { loanType: "ICICI - Two Wheeler Loan", account: "UTHYD00049743468", loanAmount: 116770, principal: 35984, annualRate: 18, emi: 4218, emiDay: 10, closedOn: "2026-05-10" },
-  { loanType: "ICICI - Bajaj Finance Loan", account: "P400SAT16174885", loanAmount: 466097, principal: 367985, annualRate: 14.5, emi: 13407, emiDay: 2 },
+  { loanType: "ICICI - Bajaj Finance Loan", account: "P400SAT16174885", loanAmount: 466097, principal: 367985, annualRate: 14.5, emi: 10996, emiDay: 2 },
   { loanType: "ICICI CC - PLCC", account: "ICICI Amazon Credit Card", loanAmount: 400000, principal: 135749, annualRate: 14.5, emi: 19393, emiDay: 5 },
   { loanType: "HDFC CC - Instaloan", account: "HDFC Rupay", loanAmount: 370000, principal: 291624, annualRate: 11.88, emi: 8208, emiDay: 1 },
   { loanType: "SBI - Personal Loan", account: "4362184714-6", loanAmount: 200000, principal: 115109, annualRate: 14.6, emi: 6894, emiDay: 1 }
