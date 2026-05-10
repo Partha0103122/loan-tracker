@@ -8,7 +8,7 @@ const defaultLoans = [
   { loanType: "ICICI - Top Up", account: "HPHYD00046139420", loanAmount: 500000, principal: 366248, annualRate: 8.9, emi: 6323, emiDay: 10 },
   { loanType: "ICICI - Personal Loan", account: "LBHYD00046933749", loanAmount: 2000000, principal: 1046189, annualRate: 10.25, emi: 37505, emiDay: 1 },
   { loanType: "ICICI - Personal Loan", account: "HPHYD00049513511", loanAmount: 500000, principal: 388831, annualRate: 10.35, emi: 8437, emiDay: 10 },
-  { loanType: "ICICI - Two Wheeler Loan", account: "UTHYD00049743468", loanAmount: 116770, principal: 35984, annualRate: 18, emi: 4218, emiDay: 10 },
+  { loanType: "ICICI - Two Wheeler Loan", account: "UTHYD00049743468", loanAmount: 116770, principal: 35984, annualRate: 18, emi: 4218, emiDay: 10, closedOn: "2026-05-10" },
   { loanType: "ICICI - Bajaj Finance Loan", account: "P400SAT16174885", loanAmount: 466097, principal: 367985, annualRate: 14.5, emi: 13407, emiDay: 2 },
   { loanType: "ICICI CC - PLCC", account: "ICICI Amazon Credit Card", loanAmount: 400000, principal: 135749, annualRate: 14.5, emi: 19393, emiDay: 5 },
   { loanType: "HDFC CC - Instaloan", account: "HDFC Rupay", loanAmount: 370000, principal: 291624, annualRate: 11.88, emi: 8208, emiDay: 1 },
@@ -19,7 +19,7 @@ const money = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR
 const number = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
 const monthName = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
-let loans = loadJson(STORAGE_KEY, defaultLoans);
+let loans = mergeDefaultMetadata(loadJson(STORAGE_KEY, defaultLoans));
 let partPayments = loadJson(PAYMENT_KEY, {});
 
 const els = {
@@ -91,6 +91,25 @@ function render() {
 }
 
 function buildLoanView(loan, index, asOf) {
+  const closedOn = loan.closedOn ? parseDate(loan.closedOn) : null;
+  if (closedOn && asOf >= closedOn) {
+    return {
+      id: getLoanId(loan, index),
+      loan,
+      index,
+      currentPrincipal: 0,
+      remaining: 0,
+      closeDate: closedOn,
+      closed: true,
+      monthlyInterest: 0,
+      payment: 0,
+      afterPaymentEmis: 0,
+      afterPaymentCloseDate: closedOn,
+      emisCut: 0,
+      interestSaved: 0
+    };
+  }
+
   const currentPrincipal = projectPrincipal(loan, asOf);
   const calculatedRemaining = remainingEmis(currentPrincipal, loan.annualRate, loan.emi);
   const baseRemaining = remainingEmis(loan.principal, loan.annualRate, loan.emi);
@@ -115,6 +134,7 @@ function buildLoanView(loan, index, asOf) {
     currentPrincipal,
     remaining,
     closeDate,
+    closed: false,
     monthlyInterest,
     payment,
     afterPaymentEmis,
@@ -139,7 +159,7 @@ function renderLoanRows(rows) {
         <div><dt>Balance today</dt><dd>${money.format(row.currentPrincipal)}</dd></div>
         <div><dt>EMI</dt><dd>${money.format(row.loan.emi)}</dd></div>
         <div><dt>Remaining</dt><dd><span class="pill ${row.remaining <= 12 ? "warn" : ""}">${row.remaining}</span></dd></div>
-        <div><dt>Closes by</dt><dd>${row.closeDate ? monthName.format(row.closeDate) : "Closed"}</dd></div>
+        <div><dt>Closes by</dt><dd>${formatCloseDate(row)}</dd></div>
         <div><dt>Interest/month</dt><dd>${money.format(row.monthlyInterest)}</dd></div>
         <div><dt>Part payment</dt><dd><input class="part-input" data-payment="${row.id}" type="number" min="0" step="1000" value="${row.payment || ""}" aria-label="Part payment for ${escapeHtml(row.loan.loanType)}"></dd></div>
         <div><dt>EMIs cut</dt><dd>${row.emisCut}</dd></div>
@@ -160,7 +180,7 @@ function renderLoanRows(rows) {
       <td data-label="Balance today">${money.format(row.currentPrincipal)}</td>
       <td data-label="EMI">${money.format(row.loan.emi)}</td>
       <td data-label="Remaining"><span class="pill ${row.remaining <= 12 ? "warn" : ""}">${row.remaining}</span></td>
-      <td data-label="Closes by">${row.closeDate ? monthName.format(row.closeDate) : "Closed"}</td>
+      <td data-label="Closes by">${formatCloseDate(row)}</td>
       <td data-label="Interest/month">${money.format(row.monthlyInterest)}</td>
       <td data-label="Part payment"><input class="part-input" data-payment="${row.id}" type="number" min="0" step="1000" value="${row.payment || ""}" aria-label="Part payment for ${escapeHtml(row.loan.loanType)}"></td>
       <td data-label="EMIs cut">${row.emisCut}</td>
@@ -190,13 +210,14 @@ function renderRawRows() {
       ["principal", "number"],
       ["annualRate", "number"],
       ["emi", "number"],
-      ["emiDay", "number"]
+      ["emiDay", "number"],
+      ["closedOn", "date"]
     ];
     fields.forEach(([field, type]) => {
       const td = document.createElement("td");
       const input = document.createElement("input");
       input.type = type;
-      input.value = loan[field];
+      input.value = loan[field] || "";
       input.min = field === "emiDay" ? "1" : "0";
       input.max = field === "emiDay" ? "28" : "";
       input.step = field === "annualRate" ? "0.01" : "1";
@@ -223,6 +244,11 @@ function renderSummary(rows) {
   els.totalEmi.textContent = money.format(totalEmi);
   els.monthlyInterest.textContent = money.format(monthlyInterest);
   els.totalSaving.textContent = money.format(totalSaving);
+}
+
+function formatCloseDate(row) {
+  if (row.closed) return `Closed ${monthName.format(row.closeDate)}`;
+  return row.closeDate ? monthName.format(row.closeDate) : "Closed";
 }
 
 function renderInsights(rows) {
@@ -359,6 +385,18 @@ function loadJson(key, fallback) {
   } catch {
     return structuredClone(fallback);
   }
+}
+
+function mergeDefaultMetadata(savedLoans) {
+  const defaultsByAccount = new Map(defaultLoans.map((loan) => [loan.account, loan]));
+  return savedLoans.map((loan) => {
+    const defaultLoan = defaultsByAccount.get(loan.account);
+    if (!defaultLoan) return loan;
+    return {
+      ...loan,
+      closedOn: loan.closedOn || defaultLoan.closedOn || ""
+    };
+  });
 }
 
 function saveJson(key, value) {
