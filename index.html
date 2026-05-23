@@ -14,12 +14,9 @@
         <p class="eyebrow">Personal loan dashboard</p>
         <h1>Loan Tracker</h1>
       </div>
-      <div class="header-actions">
-        <div class="date-panel">
-          <label for="asOfDate">View as of</label>
-          <input id="asOfDate" type="date">
-        </div>
-        <button id="refreshApp" type="button">Refresh</button>
+      <div class="date-panel">
+        <label for="asOfDate">View as of</label>
+        <input id="asOfDate" type="date">
       </div>
     </header>
 
@@ -68,11 +65,7 @@
         </div>
       </section>
 
-      <section class="loan-card-list" aria-label="Loan calculation cards">
-        <div id="loanCards"></div>
-      </section>
-
-      <section class="loan-table-wrap" aria-label="Loan calculations table">
+      <section class="loan-table-wrap" aria-label="Loan calculations">
         <table class="loan-table">
           <thead>
             <tr>
@@ -126,7 +119,6 @@
                 <th>Interest %</th>
                 <th>EMI</th>
                 <th>EMI Date</th>
-                <th>Closed On</th>
               </tr>
             </thead>
             <tbody id="rawRows"></tbody>
